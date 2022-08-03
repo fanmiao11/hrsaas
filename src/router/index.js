@@ -1,6 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+// 引入多个模块的规则
+import approvalsRouter from './modules/approvals'
+import departmentsRouter from './modules/departments'
+import employeesRouter from './modules/employees'
+import permissionRouter from './modules/permission'
+import attendancesRouter from './modules/attendances'
+import salarysRouter from './modules/salarys'
+import settingRouter from './modules/setting'
+import socialRouter from './modules/social'
+
 Vue.use(Router)
 
 /* Layout */
@@ -53,7 +63,7 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: 'Dashboard', icon: 'dashboard' }
+        meta: { title: '首页', icon: 'dashboard' }
       }
     ]
   },
@@ -62,11 +72,36 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+// 动态路由：准备好项目所有动态路由，基于后端返回的用户权限对动态路由进行筛选
+// const asyncRoutes = [
+//   {
+//     path: '/employees',
+//     component: Layout,
+//     children: [
+//       {
+//         path: '', //默认子路由
+//         component: () => import('@/views/employees'),
+//         meta: { title: '员工', icon: 'people' } //配置路由额外信息
+//       }
+//     ]
+//   }
+// ]
+export const asyncRoutes = [
+  approvalsRouter,
+  departmentsRouter,
+  employeesRouter,
+  permissionRouter,
+  attendancesRouter,
+  salarysRouter,
+  settingRouter,
+  socialRouter
+]
+
 const createRouter = () =>
   new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes
+    routes: [...constantRoutes, ...asyncRoutes] //路由规则
   })
 
 const router = createRouter()
@@ -74,16 +109,16 @@ const router = createRouter()
 // 路由（全局）前置守卫
 // 会在所有路由进入之前触发
 // router.beforeEach((to, from, next) => {
-  // console.log(to.path)
-  //   // 进入权限控制
-  //   // 调用了next 进入该路由，如果没有调用无法进入
-  // if (to.path === '/login') {
-  //   console.log(1);
-  //   next() //直接调用
-  // } else {
-  //   next('/login') //小括号里跟路由地址 再次触发路由守卫
-  // }
-  // next()
+// console.log(to.path)
+//   // 进入权限控制
+//   // 调用了next 进入该路由，如果没有调用无法进入
+// if (to.path === '/login') {
+//   console.log(1);
+//   next() //直接调用
+// } else {
+//   next('/login') //小括号里跟路由地址 再次触发路由守卫
+// }
+// next()
 // })
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
