@@ -16,8 +16,9 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="userInfo.staffPhoto"
+            :src="userInfo.staffPhoto+'111'"
             class="user-avatar"
+            v-imgError = 'defaultImg'
           />
           <span>{{userInfo.username}}</span>
           <i class="el-icon-caret-bottom" />
@@ -39,8 +40,16 @@
 import { mapGetters,mapState } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import defaultImg from '@/assets/common/head.jpg'
 
 export default {
+  data(){
+    return{
+      // 如果想在data中定义本地图片路径 需要先引入
+      defaultImg,
+      // defaultImg:'http://liufusong.top/logo.jpeg'
+    }
+  },
   components: {
     Breadcrumb,
     Hamburger
