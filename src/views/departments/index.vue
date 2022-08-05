@@ -7,7 +7,7 @@
         <!-- 树形 -->
         <el-tree :data="treeData" :props="defaultProps" default-expand-all>
           <template v-slot="{ data }">
-            <tree-tools :treeNode="data" />
+            <tree-tools @remove='loadDepts' :treeNode="data" />
           </template>
         </el-tree>
       </el-card>
