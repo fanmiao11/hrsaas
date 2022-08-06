@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container" >
     <div class="app-container">
       <el-card class="box-card">
         <!-- 头部 -->
@@ -9,11 +9,12 @@
           :treeNode="company"
         ></tree-tools>
         <!-- 树形 -->
-        <el-tree :data="treeData" :props="defaultProps" default-expand-all>
+        <el-tree :data="treeData" :props="defaultProps" default-expand-all v-loading="loading">
           <template v-slot="{ data }">
             <tree-tools
               @add="showAddDept"
               @remove="loadDepts"
+              @edit="showEditDept"
               :treeNode="data"
             />
           </template>
@@ -21,7 +22,7 @@
       </el-card>
     </div>
     <!-- 添加部门弹框 -->
-    <add-dept :visible.sync="dialogVisible" :currentNode='currentNode' @add-success="loadDepts" />
+    <add-dept ref="addDept" :visible.sync="dialogVisible" :currentNode='currentNode' @add-success="loadDepts" />
   </div>
 </template>
 
@@ -49,6 +50,7 @@ export default {
         { name: '人事部', manager: '孙权' }
       ],
       currentNode:{},
+      loading:false,
     }
   },
   components: {
@@ -69,17 +71,23 @@ export default {
       this.currentNode = val
 
     },
+    showEditDept(val){
+      this.dialogVisible = true
+      this.$refs.addDept.getDeptById(val.id)
+    },
 
     handleNodeClick(data) {
       console.log(data)
     },
     async loadDepts() {
+      this.loading = true
       // console.log(111);
       const res = await getDepartments()
       // console.log(res)
       // this.treeData = res.depts
       this.treeData = transLitToTree(res.depts, '')
       // console.log(this.transLitToTree(this.treeData, ''))
+      this.loading = false
     }
 
     // transLitToTree(data, pid) {

@@ -19,13 +19,37 @@ export function delDepartments(id) {
 
 /**
  * 新增部门
- * @param {Object} data 
+ * @param {Object} data
  * @returns Promise
  */
 export function addDepartments(data) {
   return request({
     url: `/company/department`,
     method: 'POST',
+    data
+  })
+}
+
+/**
+ * 根据id获取部门详情
+ * @param {String} id 部门id
+ * @returns
+ */
+export function getDepartment(id) {
+  return request({
+    url: `/company/department/${id}`
+  })
+}
+
+/**
+ * 根据id修改部门
+ * @param {Object} data 
+ * @returns 
+ */
+export function editDepartment(data) {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'PUT',
     data,
   })
 }
