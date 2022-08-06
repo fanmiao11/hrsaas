@@ -11,7 +11,7 @@
               操作<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>添加部门</el-dropdown-item>
+              <el-dropdown-item @click.native="$emit('add',treeNode)" >添加部门</el-dropdown-item>
               <template v-if="!isRoot">
                 <el-dropdown-item>编辑部门</el-dropdown-item>
                 <el-dropdown-item @click.native="onRemove"
@@ -32,7 +32,8 @@ import {delDepartments} from '@/api/departments'
 export default {
   name: 'TreeTools',
   data() {
-    return {}
+    return {
+    }
   },
   props: {
     treeNode: {
@@ -48,6 +49,7 @@ export default {
   created() {},
 
   methods: {
+
     async onRemove() {
       try {
         await this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
