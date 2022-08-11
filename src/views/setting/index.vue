@@ -1,20 +1,133 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <h2>公司设置</h2>
+      <template>
+        <el-tabs v-model="activeName">
+          <el-tab-pane label="用户管理" name="first">
+            <el-button type="primary" @click="dialogVisible = true"
+              >新增角色</el-button
+            >
+            <!-- 表格 -->
+            <el-table :data="tableData" style="width: 100%">
+              <el-table-column type="index" label="序号"> </el-table-column>
+              <el-table-column prop="name" label="角色"> </el-table-column>
+              <el-table-column prop="description" label="描述">
+              </el-table-column>
+              <el-table-column prop="address" label="操作">
+                <template slot-scope="{ row }">
+                  <el-button type="success">分配权限</el-button>
+                  <el-button type="primary">编辑</el-button>
+                  <el-button type="danger">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <el-pagination
+              :page-sizes="[2, 5, 10]"
+              :page-size="pagesize"
+              layout="total,sizes,prev,pager, next"
+              :total="totalCount"
+              @current-change="currentChange"
+              @size-change="sizeChange"
+            >
+            </el-pagination>
+          </el-tab-pane>
+          <el-tab-pane label="配置管理" name="second">
+            <el-button type="primary">公司信息</el-button>
+          </el-tab-pane>
+        </el-tabs>
+      </template>
+      <!-- 对话框 -->
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        width="50%"
+        @close="dialogClose"
+      >
+        <el-form
+          :model="addRoleForm"
+          :rules="addRoleFormRules"
+          ref="form"
+          label-width="100px"
+        >
+          <el-form-item label="角色名称" prop="name">
+            <el-input v-model="addRoleForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="角色描述">
+            <el-input v-model="addRoleForm.description"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addRole">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
+import { getRolesApi, addRoleApi } from '@/api/role'
 export default {
   data() {
-    return {}
+    return {
+      activeName: 'first',
+      tableData: [],
+      totalCount: 0,
+      pagesize: 2,
+      page: 1,
+      dialogVisible: false,
+      addRoleForm: {
+        name: '', //部门名称
+        description: ''
+      },
+      addRoleFormRules: {
+        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
+      }
+    }
   },
 
-  created() {},
+  created() {
+    this.getRoles()
+  },
 
-  methods: {}
+  methods: {
+    async getRoles() {
+      const res = await getRolesApi({
+        page: this.page,
+        pagesize: this.pagesize
+      })
+      console.log(res)
+      this.tableData = res.rows
+      this.totalCount = res.total
+    },
+    currentChange(val) {
+      console.log(val)
+      this.page = val
+      this.getRoles()
+    },
+    sizeChange(val) {
+      this.pagesize = val
+      this.getRoles()
+    },
+    addRole() {
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          // console.log('校验通过');
+          const res = await addRoleApi(this.addRoleForm)
+          console.log(res)
+          this.getRoles()
+          this.dialogVisible = false
+        }
+      })
+    },
+    // 监听会话框关闭
+    dialogClose() {
+      // 前置：只能重置有校验的表单
+      this.$refs.form.resetFields()
+      this.addRoleForm.description = ''
+    }
+  }
 }
 </script>
 
