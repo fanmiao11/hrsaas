@@ -6,13 +6,13 @@ import store from '@/store'
 // from:来自于哪个路由的信息
 // next:是否进入
 const whiteList = ['/login', '/404']
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   const token = store.state.user.token
   if (token) {
     // 更改路由时如果没有获取过用户信息再去获取
     if (!store.state.user.userInfo.userId) {
       // 获取用户信息
-      store.dispatch('user/getUserInfo')
+    await store.dispatch('user/getUserInfo')
     }
     // 1 登录之后的权限
     //    是否进入登录页    是：跳到首页  否：直接进入

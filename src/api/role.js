@@ -11,14 +11,20 @@ export function getRolesApi(params) {
 }
 
 /**
- * 
- * @param {Object} data {name,region} 
+ *
+ * @param {Object} data {name,region}
  */
 export function addRoleApi(data) {
   return request({
     url: '/sys/role',
     method: 'POST',
-    data,
+    data
+  })
+}
 
+export function removeRoleApi(id) {
+  return request({
+    url: `/sys/role/${id}`,
+    method:'DELETE'
   })
 }

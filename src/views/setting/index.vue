@@ -17,7 +17,9 @@
                 <template slot-scope="{ row }">
                   <el-button type="success">分配权限</el-button>
                   <el-button type="primary">编辑</el-button>
-                  <el-button type="danger">删除</el-button>
+                  <el-button type="danger" @click="removeRole(row.id)"
+                    >删除</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>
@@ -33,7 +35,27 @@
             </el-pagination>
           </el-tab-pane>
           <el-tab-pane label="配置管理" name="second">
-            <el-button type="primary">公司信息</el-button>
+            <el-alert
+              title="对公司名称、公司地址、营业执照、公司地区的更新，将使得公司资料被重新审核，请谨慎修改"
+              type="info"
+              show-icon
+              :closable="false"
+            >
+            </el-alert>
+            <el-form ref="form" :model="companyInfo" label-width="80px" :style="{marginTop:'50px'}">
+              <el-form-item label="公司名称">
+                <el-input v-model="companyInfo.name" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="公司地址">
+                <el-input v-model="companyInfo.companyAddress" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="公司邮箱">
+                <el-input v-model="companyInfo.mailbox" disabled></el-input>
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="companyInfo.remarks" disabled></el-input>
+              </el-form-item>
+            </el-form>
           </el-tab-pane>
         </el-tabs>
       </template>
@@ -67,7 +89,8 @@
 </template>
 
 <script>
-import { getRolesApi, addRoleApi } from '@/api/role'
+import { getRolesApi, addRoleApi, removeRoleApi } from '@/api/role'
+import {getCompanyInfo} from '@/api/setting'
 export default {
   data() {
     return {
@@ -83,12 +106,14 @@ export default {
       },
       addRoleFormRules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
-      }
+      },
+      companyInfo:{},
     }
   },
 
   created() {
     this.getRoles()
+    this.getCompanyInfo()
   },
 
   methods: {
@@ -121,11 +146,25 @@ export default {
         }
       })
     },
+    async removeRole(id) {
+      // console.log('删除');
+      await removeRoleApi(id)
+      this.getRoles()
+    },
     // 监听会话框关闭
     dialogClose() {
       // 前置：只能重置有校验的表单
       this.$refs.form.resetFields()
       this.addRoleForm.description = ''
+    },
+    // 获取公司信息
+    async getCompanyInfo(){
+      const res = await getCompanyInfo(
+        this.$store.state.user.userInfo.companyId
+      )
+      // console.log(res);
+      this.companyInfo = res
+      console.log(this.companyInfo);
     }
   }
 }
