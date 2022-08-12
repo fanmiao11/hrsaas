@@ -15,9 +15,6 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
-import components from '@/components'
-Vue.use(components)
-
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -36,8 +33,11 @@ if (process.env.NODE_ENV === 'production') {
 // 如果想要中文版 element-ui，按如下方式声明
 Vue.use(ElementUI)
 
-
 Vue.config.productionTip = false
+
+// 统一注册组件
+import components from '@/components'
+Vue.use(components)
 
 // // 自定义指令
 // // 参数1:自定义指令的名字 不需要加 v-
@@ -59,16 +59,24 @@ Vue.config.productionTip = false
 //   }
 // })
 
+// 统一注册自定义指令
 import * as directives from '@/directive'
-
-for(let key in directives){
-  Vue.directive(key,directives[key])
+for (let key in directives) {
+  Vue.directive(key, directives[key])
 }
-
+// import dayjs from 'dayjs'
+// Vue.filter('formatTime',(val)=>{
+//   return dayjs(val).format('YYYY-MM-DD')
+// })
+// 统一注册过滤器
+import * as filters from '@/filters'
+for(let key in filters){
+  Vue.filter(key,filters[key])
+}
 
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 })
