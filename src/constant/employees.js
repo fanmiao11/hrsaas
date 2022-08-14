@@ -415,6 +415,13 @@ export default {
       id: '3',
       value: '离职'
     }
-  ]
+  ],
+  // 导入员工 路径映射
+  importMapKeyPath: {
+    入职日期: 'timeOfEntry',
+    姓名: 'username',
+    工号: 'workNumber',
+    手机号: 'mobile',
+    转正日期: 'correctionTime'
+  }
 }
-
