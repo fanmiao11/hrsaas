@@ -4,8 +4,12 @@
       <page-tools>
         <span slot="left">共166条记录</span>
         <template slot="right">
-          <el-button size="small" type="warning" @click="importFn">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
+          <el-button size="small" type="warning" @click="importFn"
+            >导入</el-button
+          >
+          <el-button size="small" type="danger" @click="exportFn"
+            >导出</el-button
+          >
           <el-button size="small" type="primary" @click="addEmployees"
             >新增员工</el-button
           >
@@ -79,8 +83,8 @@
           style="height: 60px"
         >
           <el-pagination
-          :page-size="pages.size"
-          :total="total"
+            :page-size="pages.size"
+            :total="total"
             @current-change="currentChange"
             layout="prev, pager, next"
           />
@@ -99,6 +103,7 @@
 import { getEmployeeListApi, delEmployeeApi } from '@/api/employees'
 import AddEmployees from './components/add-employees.vue'
 import employees from '@/constant/employees'
+const {hireType, exportExcelMapPath } = employees
 export default {
   components: {
     AddEmployees
@@ -160,8 +165,38 @@ export default {
     addEmployees() {
       this.showAddEmployees = true
     },
-    importFn(){
+    importFn() {
       this.$router.push('/import')
+    },
+    async exportFn() {
+      const header = Object.keys(exportExcelMapPath)
+      // console.log(header)
+      const { rows } = await getEmployeeListApi({
+        page: 1,
+        size: this.total
+      })
+      // console.log(rows);
+      const data = rows.map((item) => {
+        return header.map((h) => {
+          if(h==='聘用形式'){
+           const findItem= hireType.find(hire => {
+              return hire.id=== item[exportExcelMapPath[h]]
+            })
+            return findItem ? findItem.value : '未知'
+          }else{
+            return item[exportExcelMapPath[h]]
+          }
+        })
+      })
+      // console.log(data);
+      const { export_json_to_excel } = await import('@/vendor/Export2Excel')
+      export_json_to_excel({
+        header, //表头 必填
+        data, //具体数据 必填
+        filename: 'excel-list', //非必填
+        autoWidth: true, //非必填
+        bookType: 'xlsx' //非必填
+      })
     }
   }
 }

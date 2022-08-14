@@ -39,7 +39,6 @@ export default {
       //   手机号: "mobile",
       //   转正日期: "correctionTime"
       // }
-
       const newArr = results.map((item) => {
         // const obj = {}
         // for(let key in importMapKeyPath){
@@ -60,7 +59,7 @@ export default {
         }, {})
       })
 
-      console.log(newArr)
+      // console.log(newArr)
 
       await importEmployee(newArr)
       this.$message.success('导入成功')
