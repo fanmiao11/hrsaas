@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <UploadImg @onSuccess="onSuccess"></UploadImg>
   </div>
 </template>
 
@@ -13,6 +13,11 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  methods:{
+    onSuccess({url}){
+      console.log(url);
+    }
   }
 }
 </script>
