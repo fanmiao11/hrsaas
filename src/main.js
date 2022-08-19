@@ -58,6 +58,8 @@ Vue.use(components)
 //     }
 //   }
 // })
+import Print from 'vue-print-nb'
+Vue.use(Print)
 
 // 统一注册自定义指令
 import * as directives from '@/directive'
@@ -70,8 +72,8 @@ for (let key in directives) {
 // })
 // 统一注册过滤器
 import * as filters from '@/filters'
-for(let key in filters){
-  Vue.filter(key,filters[key])
+for (let key in filters) {
+  Vue.filter(key, filters[key])
 }
 
 new Vue({

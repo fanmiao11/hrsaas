@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-upload
-        v-loading="loading"
-    element-loading-text="拼命加载中"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
       action="#"
       list-type="picture-card"
       :http-request="onRequest"
@@ -44,16 +44,16 @@ export default {
       ],
       previewImgDialog: false,
       imgUrl: '',
-      loading:false,
+      loading: false
     }
   },
 
   created() {},
 
   methods: {
-    onRequest({file}) {
-        this.loading=true
-    //   console.log(111)
+    onRequest({ file }) {
+      this.loading = true
+      //   console.log(111)
       cos.putObject(
         {
           Bucket: 'hmhr-31-1313341667' /* 填入您自己的存储桶，必须字段 */,
@@ -66,20 +66,19 @@ export default {
           }
         },
         (err, data) => {
-            // 传送成功或失败均进入该函数
-          if(err || data.statusCode !== 200){
+          // 传送成功或失败均进入该函数
+          if (err || data.statusCode !== 200) {
             return this.$message.error('上传失败，请重试')
           }
-          this.$emit('onSuccess',{
-            url:'https://'+data.Location
+          this.$emit('onSuccess', {
+            url: 'https://' + data.Location
           })
-        
         }
       )
-      this.loading=false
+      this.loading = false
     },
     onChange(file, fileList) {
-    //   console.log(fileList)
+      //   console.log(fileList)
       this.fileList = fileList
     },
     onRemove(file, fileList) {

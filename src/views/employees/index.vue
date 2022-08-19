@@ -31,6 +31,7 @@
                   padding: 10px;
                 "
                 :src="scope.row.staffPhoto"
+                @click="showErCodeDialog(scope.row.staffPhoto)"
               />
             </template>
           </el-table-column>
@@ -61,7 +62,12 @@
           </el-table-column>
           <el-table-column label="操作" sortable fixed="right" width="280">
             <template slot-scope="{ row }">
-              <el-button type="text" size="small" @click="$router.push('/employees/detail/'+row.id)">查看</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="$router.push('/employees/detail/' + row.id)"
+                >查看</el-button
+              >
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
@@ -96,6 +102,11 @@
       @add-success="getEmployeeList"
       :visible.sync="showAddEmployees"
     ></add-employees>
+
+    <!-- 头像二维码 -->
+    <el-dialog title="头像二维码" :visible.sync="ercodeDialog">
+      <canvas id="canvas"></canvas>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,7 +114,8 @@
 import { getEmployeeListApi, delEmployeeApi } from '@/api/employees'
 import AddEmployees from './components/add-employees.vue'
 import employees from '@/constant/employees'
-const {hireType, exportExcelMapPath } = employees
+const { hireType, exportExcelMapPath } = employees
+import QrCode from 'qrcode'
 export default {
   components: {
     AddEmployees
@@ -116,7 +128,8 @@ export default {
         page: 1,
         size: 5
       },
-      showAddEmployees: false
+      showAddEmployees: false,
+      ercodeDialog: false
     }
   },
 
@@ -178,12 +191,12 @@ export default {
       // console.log(rows);
       const data = rows.map((item) => {
         return header.map((h) => {
-          if(h==='聘用形式'){
-           const findItem= hireType.find(hire => {
-              return hire.id=== item[exportExcelMapPath[h]]
+          if (h === '聘用形式') {
+            const findItem = hireType.find((hire) => {
+              return hire.id === item[exportExcelMapPath[h]]
             })
             return findItem ? findItem.value : '未知'
-          }else{
+          } else {
             return item[exportExcelMapPath[h]]
           }
         })
@@ -196,6 +209,14 @@ export default {
         filename: 'excel-list', //非必填
         autoWidth: true, //非必填
         bookType: 'xlsx' //非必填
+      })
+    },
+    showErCodeDialog(staffPhoto) {
+      if (!staffPhoto) return this.$message.error('该用户还未设置头像')
+      this.ercodeDialog = true
+      this.$nextTick(() => {
+        var canvas = document.getElementById('canvas')
+        QrCode.toCanvas(canvas, staffPhoto)
       })
     }
   }
