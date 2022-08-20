@@ -71,7 +71,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="checkRole(row)">角色</el-button>
               <el-button
                 type="text"
                 size="small"
@@ -107,18 +107,23 @@
     <el-dialog title="头像二维码" :visible.sync="ercodeDialog">
       <canvas id="canvas"></canvas>
     </el-dialog>
+
+    <!-- 分配角色 -->
+    <assign-role :visible="assignRoleVisible" :employeesId="currentEmployeesId" @closeAssignRole="closeAssignRole"></assign-role>
   </div>
 </template>
 
 <script>
 import { getEmployeeListApi, delEmployeeApi } from '@/api/employees'
 import AddEmployees from './components/add-employees.vue'
+import AssignRole from './components/assign-role.vue'
 import employees from '@/constant/employees'
 const { hireType, exportExcelMapPath } = employees
 import QrCode from 'qrcode'
 export default {
   components: {
-    AddEmployees
+    AddEmployees,
+    AssignRole
   },
   data() {
     return {
@@ -129,7 +134,9 @@ export default {
         size: 5
       },
       showAddEmployees: false,
-      ercodeDialog: false
+      ercodeDialog: false,
+      assignRoleVisible:false,
+      currentEmployeesId:''
     }
   },
 
@@ -161,6 +168,16 @@ export default {
         item.id === cellValue
       })
       return findItem ? findItem.value : '未知'
+    },
+    // 角色
+    checkRole(row){
+      this.assignRoleVisible=true
+      // console.log(row);
+      this.currentEmployeesId=row.id
+    },
+    // 关闭角色弹框
+    closeAssignRole(){
+      this.assignRoleVisible=false
     },
     // 删除员工
     async removeEmployees(id) {

@@ -15,7 +15,9 @@
               </el-table-column>
               <el-table-column prop="address" label="操作">
                 <template slot-scope="{ row }">
-                  <el-button type="success">分配权限</el-button>
+                  <el-button type="success" @click="showPermDialog(row)"
+                    >分配权限</el-button
+                  >
                   <el-button type="primary">编辑</el-button>
                   <el-button type="danger" @click="removeRole(row.id)"
                     >删除</el-button
@@ -42,12 +44,20 @@
               :closable="false"
             >
             </el-alert>
-            <el-form ref="form" :model="companyInfo" label-width="80px" :style="{marginTop:'50px'}">
+            <el-form
+              ref="form"
+              :model="companyInfo"
+              label-width="80px"
+              :style="{ marginTop: '50px' }"
+            >
               <el-form-item label="公司名称">
                 <el-input v-model="companyInfo.name" disabled></el-input>
               </el-form-item>
               <el-form-item label="公司地址">
-                <el-input v-model="companyInfo.companyAddress" disabled></el-input>
+                <el-input
+                  v-model="companyInfo.companyAddress"
+                  disabled
+                ></el-input>
               </el-form-item>
               <el-form-item label="公司邮箱">
                 <el-input v-model="companyInfo.mailbox" disabled></el-input>
@@ -84,13 +94,42 @@
           <el-button type="primary" @click="addRole">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 分配权限对话框 -->
+      <el-dialog
+        title="给角色分配权限"
+        :visible.sync="setRightDialog"
+        width="50%"
+        @close = "closePerDialog"
+      >
+        <el-tree
+          :props="{ label: 'name' }"
+          show-checkbox
+          :data="permissions"
+          node-key="id"
+          default-expand-all
+          :default-checked-keys="checkedPermissionsList"
+          ref="perTree"
+        >
+        </el-tree>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="closePerDialog">取 消</el-button>
+          <el-button type="primary" @click="assignPrem">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import { getRolesApi, addRoleApi, removeRoleApi } from '@/api/role'
-import {getCompanyInfo} from '@/api/setting'
+import {
+  getRolesApi,
+  addRoleApi,
+  removeRoleApi,
+  getRoleDetail,assignPerm
+} from '@/api/role'
+import { getCompanyInfo } from '@/api/setting'
+import { getPermissionList } from '@/api/permission'
+import { transLitToTree } from '@/utils'
 export default {
   data() {
     return {
@@ -107,7 +146,11 @@ export default {
       addRoleFormRules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
       },
-      companyInfo:{},
+      companyInfo: {},
+      setRightDialog: false,
+      permissions: [], //权限列表
+      checkedPermissionsList: [], //默认选中权限
+      currentRoleId:'',
     }
   },
 
@@ -122,7 +165,7 @@ export default {
         page: this.page,
         pagesize: this.pagesize
       })
-      console.log(res)
+      // console.log(res)
       this.tableData = res.rows
       this.totalCount = res.total
     },
@@ -158,14 +201,47 @@ export default {
       this.addRoleForm.description = ''
     },
     // 获取公司信息
-    async getCompanyInfo(){
+    async getCompanyInfo() {
       const res = await getCompanyInfo(
         this.$store.state.user.userInfo.companyId
       )
       // console.log(res);
       this.companyInfo = res
-      console.log(this.companyInfo);
-    }
+      // console.log(this.companyInfo)
+    },
+    // 显示分配权限对话框
+    async showPermDialog(row) {
+      this.currentRoleId = row.id
+      this.setRightDialog = true
+      this.getPermission()
+      // 获取角色已分配权限
+      const res = await getRoleDetail(row.id)
+      // console.log(res.permIds)
+      this.checkedPermissionsList = res.permIds
+    },
+    // 关闭分配权限对话框
+    closePerDialog() {
+      this.setRightDialog = false
+      this.checkedPermissionsList=[]
+    },
+    // 获取权限列表
+    async getPermission() {
+      const res = await getPermissionList()
+      // console.log(res)
+      this.permissions = transLitToTree(res, '0')
+      // console.log(this.permissions)
+    },
+    // 给角色分配权限
+   async assignPrem(){
+    // console.log(this.$refs.perTree.getCheckedKeys());
+    const res = await assignPerm({
+        id:this.currentRoleId,
+        permIds:this.$refs.perTree.getCheckedKeys()
+      })
+      console.log(res);
+      this.$message.success('权限分配成功')
+    //   this.closePerDialog()
+    },
   }
 }
 </script>

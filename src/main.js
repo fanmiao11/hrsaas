@@ -58,6 +58,7 @@ Vue.use(components)
 //     }
 //   }
 // })
+// 打印
 import Print from 'vue-print-nb'
 Vue.use(Print)
 
