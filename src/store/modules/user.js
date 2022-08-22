@@ -1,5 +1,6 @@
 import { getUserDetail, getUserInfoApi, login } from '@/api/user'
 import { setTokenTime } from '@/utils/auth'
+import { resetRouter } from '@/router'
 export default {
   namespaced: true,
   state: {
@@ -32,11 +33,14 @@ export default {
       const userBaseInfo = await getUserInfoApi()
       const userInfo = await getUserDetail(userBaseInfo.userId)
       commit('setUserInfo', { ...userBaseInfo, ...userInfo })
+      return userBaseInfo
     },
 
     logout(context) {
       context.commit('setToken', '')
       context.commit('setUserInfo', {})
+      resetRouter()
+      context.commit('permission/setRoutes',[],{root:true})
     }
   }
 }

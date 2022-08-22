@@ -43,8 +43,8 @@ module.exports = {
     proxy: {
       // 只要以/api开头就当做请求拦截 都能拦截到
       '/api': {
-        target: 'http://ihrm-java.itheima.net/' // 跨域请求的地址
-        // target: 'http://ihrm.itheima.net/' // 跨域请求的地址
+        // target: 'http://ihrm-java.itheima.net/' // 跨域请求的地址
+        target: 'http://ihrm.itheima.net/' // 跨域请求的地址
       },
       // 如果还有其他服务器 可以再写
       // '/api1': {

@@ -4,13 +4,25 @@
       <page-tools>
         <span slot="left">共166条记录</span>
         <template slot="right">
-          <el-button size="small" type="warning" @click="importFn"
+          <el-button
+            size="small"
+            type="warning"
+            @click="importFn"
+            v-if="isHas(point.employees.import)"
             >导入</el-button
           >
-          <el-button size="small" type="danger" @click="exportFn"
+          <el-button
+            size="small"
+            type="danger"
+            @click="exportFn"
+            v-if="isHas(point.employees.export)"
             >导出</el-button
           >
-          <el-button size="small" type="primary" @click="addEmployees"
+          <el-button
+            size="small"
+            type="primary"
+            @click="addEmployees"
+            v-if="isHas(point.employees.add)"
             >新增员工</el-button
           >
         </template>
@@ -71,11 +83,14 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small" @click="checkRole(row)">角色</el-button>
+              <el-button type="text" size="small" @click="checkRole(row)"
+                >角色</el-button
+              >
               <el-button
                 type="text"
                 size="small"
                 @click="removeEmployees(row.id)"
+                v-if="isHas(point.employees.del)"
                 >删除</el-button
               >
             </template>
@@ -109,7 +124,11 @@
     </el-dialog>
 
     <!-- 分配角色 -->
-    <assign-role :visible="assignRoleVisible" :employeesId="currentEmployeesId" @closeAssignRole="closeAssignRole"></assign-role>
+    <assign-role
+      :visible="assignRoleVisible"
+      :employeesId="currentEmployeesId"
+      @closeAssignRole="closeAssignRole"
+    ></assign-role>
   </div>
 </template>
 
@@ -118,6 +137,7 @@ import { getEmployeeListApi, delEmployeeApi } from '@/api/employees'
 import AddEmployees from './components/add-employees.vue'
 import AssignRole from './components/assign-role.vue'
 import employees from '@/constant/employees'
+import permissionPoint from '@/constant/permission'
 const { hireType, exportExcelMapPath } = employees
 import QrCode from 'qrcode'
 export default {
@@ -135,8 +155,9 @@ export default {
       },
       showAddEmployees: false,
       ercodeDialog: false,
-      assignRoleVisible:false,
-      currentEmployeesId:''
+      assignRoleVisible: false,
+      currentEmployeesId: '',
+      point: permissionPoint
     }
   },
 
@@ -170,14 +191,14 @@ export default {
       return findItem ? findItem.value : '未知'
     },
     // 角色
-    checkRole(row){
-      this.assignRoleVisible=true
+    checkRole(row) {
+      this.assignRoleVisible = true
       // console.log(row);
-      this.currentEmployeesId=row.id
+      this.currentEmployeesId = row.id
     },
     // 关闭角色弹框
-    closeAssignRole(){
-      this.assignRoleVisible=false
+    closeAssignRole() {
+      this.assignRoleVisible = false
     },
     // 删除员工
     async removeEmployees(id) {
@@ -235,6 +256,9 @@ export default {
         var canvas = document.getElementById('canvas')
         QrCode.toCanvas(canvas, staffPhoto)
       })
+    },
+    isHas(point) {
+      return this.$store.state.permission.points.includes(point)
     }
   }
 }

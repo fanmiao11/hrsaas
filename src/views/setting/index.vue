@@ -4,9 +4,13 @@
       <template>
         <el-tabs v-model="activeName">
           <el-tab-pane label="用户管理" name="first">
-            <el-button type="primary" @click="dialogVisible = true"
+            <el-button
+              type="primary"
+              @click="dialogVisible = true"
+              v-isHas="point.roles.add"
               >新增角色</el-button
             >
+              <!-- v-if="isHas(point.roles.add)" -->
             <!-- 表格 -->
             <el-table :data="tableData" style="width: 100%">
               <el-table-column type="index" label="序号"> </el-table-column>
@@ -18,7 +22,9 @@
                   <el-button type="success" @click="showPermDialog(row)"
                     >分配权限</el-button
                   >
-                  <el-button type="primary">编辑</el-button>
+                  <el-button type="primary" v-if="isHas(point.roles.edit)"
+                    >编辑</el-button
+                  >
                   <el-button type="danger" @click="removeRole(row.id)"
                     >删除</el-button
                   >
@@ -99,7 +105,7 @@
         title="给角色分配权限"
         :visible.sync="setRightDialog"
         width="50%"
-        @close = "closePerDialog"
+        @close="closePerDialog"
       >
         <el-tree
           :props="{ label: 'name' }"
@@ -125,11 +131,15 @@ import {
   getRolesApi,
   addRoleApi,
   removeRoleApi,
-  getRoleDetail,assignPerm
+  getRoleDetail,
+  assignPerm
 } from '@/api/role'
 import { getCompanyInfo } from '@/api/setting'
 import { getPermissionList } from '@/api/permission'
 import { transLitToTree } from '@/utils'
+// import permissionPoint from '@/constant/permission'
+import mixinPersission from '@/mixins/permission'
+
 export default {
   data() {
     return {
@@ -150,9 +160,12 @@ export default {
       setRightDialog: false,
       permissions: [], //权限列表
       checkedPermissionsList: [], //默认选中权限
-      currentRoleId:'',
+      currentRoleId: '',
+      // point: permissionPoint
     }
   },
+
+  mixins:[mixinPersission],
 
   created() {
     this.getRoles()
@@ -222,7 +235,7 @@ export default {
     // 关闭分配权限对话框
     closePerDialog() {
       this.setRightDialog = false
-      this.checkedPermissionsList=[]
+      this.checkedPermissionsList = []
     },
     // 获取权限列表
     async getPermission() {
@@ -232,16 +245,19 @@ export default {
       // console.log(this.permissions)
     },
     // 给角色分配权限
-   async assignPrem(){
-    // console.log(this.$refs.perTree.getCheckedKeys());
-    const res = await assignPerm({
-        id:this.currentRoleId,
-        permIds:this.$refs.perTree.getCheckedKeys()
+    async assignPrem() {
+      // console.log(this.$refs.perTree.getCheckedKeys());
+      const res = await assignPerm({
+        id: this.currentRoleId,
+        permIds: this.$refs.perTree.getCheckedKeys()
       })
-      console.log(res);
+      console.log(res)
       this.$message.success('权限分配成功')
-    //   this.closePerDialog()
+      //   this.closePerDialog()
     },
+    // isHas(point) {
+    //   return this.$store.state.permission.points.includes(point)
+    // }
   }
 }
 </script>
