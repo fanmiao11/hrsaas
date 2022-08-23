@@ -21,7 +21,7 @@ export default {
       })
       context.commit('setRoutes', routes)
       context.commit('setPoints',roles.points)
-      console.log(roles);
+      // console.log(roles);
       router.addRoutes([
         ...routes,
         { path: '*', redirect: '/404', hidden: true }

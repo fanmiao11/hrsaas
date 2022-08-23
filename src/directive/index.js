@@ -27,7 +27,7 @@ export const imgError = {
 
 export const isHas = {
   inserted(el, binding) {
-    console.log(el);
+    // console.log(el);
     const has = store.state.permission.points.includes(binding.value)
     if(!has){
       el.remove()

@@ -8,19 +8,21 @@
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      {{userInfo.companyName}}
+      {{ userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
 
     <div class="right-menu">
+      <toggle-lang />
+      <full-screen />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
             :src="userInfo.staffPhoto"
             class="user-avatar"
-            v-imgError = 'defaultImg'
+            v-imgError="defaultImg"
           />
-          <span>{{userInfo.username}}</span>
+          <span>{{ userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -37,16 +39,16 @@
 </template>
 
 <script>
-import { mapGetters,mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import defaultImg from '@/assets/common/head.jpg'
 
 export default {
-  data(){
-    return{
+  data() {
+    return {
       // 如果想在data中定义本地图片路径 需要先引入
-      defaultImg,
+      defaultImg
       // defaultImg:'http://liufusong.top/logo.jpeg'
     }
   },
@@ -56,7 +58,7 @@ export default {
   },
   computed: {
     ...mapGetters(['sidebar', 'avatar']),
-    ...mapState('user',['userInfo'])
+    ...mapState('user', ['userInfo'])
   },
   methods: {
     toggleSideBar() {
@@ -120,6 +122,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    display: flex;
 
     &:focus {
       outline: none;
@@ -154,7 +157,7 @@ export default {
         color: #fff;
 
         cursor: pointer;
-        span{
+        span {
           margin: 0 3px;
         }
 

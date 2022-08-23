@@ -31,7 +31,8 @@ if (process.env.NODE_ENV === 'production') {
 // set ElementUI lang to EN
 // Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
-Vue.use(ElementUI)
+// Vue.use(ElementUI)
+Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 
 Vue.config.productionTip = false
 
@@ -77,9 +78,12 @@ for (let key in filters) {
   Vue.filter(key, filters[key])
 }
 
+import i18n from '@/i18n'
+
 new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: (h) => h(App)
 })
